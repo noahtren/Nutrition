@@ -74,6 +74,8 @@ class Day:
         self.meal = Meal(self.foods)
     def Display_Day(self):
         return self.meal.Meal_Info()
+    def Get_Meal(self):
+        return self.meal
 class Meal:
     def __init__(self, foods):
         self.foods = foods
@@ -115,11 +117,29 @@ class Meal:
             grouped_nutrients.append([])
             for name in group:
                 if (name != None):
-                    grouped_nutrients[grouped_names.index(group)].append(Nutrient(name, group, namevalues[names.index(name)], units[names.index(name)], 100))
+                    grouped_nutrients[grouped_names.index(group)].append(Nutrient(name, group, namevalues[names.index(name)], units[names.index(name)], 100, "MEAL"))
         self.nutrients = grouped_nutrients
         self.groups = groups
+    def Get_Grouped_Nutrients(self):
+        return self.nutrients
+    def Get_Groups(self):
+        return self.groups
     def Get_Foods(self):
         return self.foods
+    def Nutrient_Analysis(self, nutrient):
+        # return top contributors to nutrient
+        nutrients = []
+        total_val = 0
+        recommended_value = recommended_amounts[nutrient]
+        for food in self.foods:
+            for nutrient_group in food.Get_Nutrients():
+                for nutrient in nutrient_group:
+                    if (nutrient.get_name() == nutrient):
+                        nutrients.append(nutrient)
+                        total_val = total_val + nutrient.get_value()
+        nutrients.sort(key=nutrient.get_value())
+        return nutrients
+
     def Meal_Info(self):
         return_string = ""
         for group_num in range(0, len(self.nutrients)):
@@ -141,16 +161,16 @@ class Food:
             nutrient_json = first["foods"][0]["food"]["nutrients"]
             groups = [] # proximates, lipids, etc
             grouped_nutrients = []
+            self.name = first["foods"][0]["food"]["desc"]["name"]
             for nutrient in nutrient_json:
                 if (float(nutrient["value"]) != 0):
                     if (nutrient["group"] not in groups):
                         groups.append(nutrient["group"])
                         grouped_nutrients.append([])
                         count = 0
-                    grouped_nutrients[len(groups)-1].append(Nutrient(nutrient["name"], nutrient["group"], float(nutrient["value"]), nutrient["unit"], second))
+                    grouped_nutrients[len(groups)-1].append(Nutrient(nutrient["name"], nutrient["group"], float(nutrient["value"]), nutrient["unit"], second, self.name))
                     count += 1
             self.nutrients = grouped_nutrients
-            self.name = first["foods"][0]["food"]["desc"]["name"]
             self.id = first["foods"][0]["food"]["desc"]["ndbno"]
             self.grams = second
             self.groups = groups
@@ -169,6 +189,8 @@ class Food:
         return self.groups
     def Get_Nutrients(self):
         return self.nutrients
+    def Get_Name(self):
+        return self.name
     def Food_Info(self):
         if self.grams == "N/A":
             return_string = "{}".format(self.name)
@@ -181,10 +203,11 @@ class Food:
         return return_string
 
 class Nutrient:
-    def __init__(self, name, group, value, unit, grams):
+    def __init__(self, name, group, value, unit, grams=None, my_food=None):
         self.name = name
         self.group = group
         self.unit = unit
+        self.my_food = my_food
         self.rda_message = None
         if grams != None:
             self.value = round((value / 100) * grams, 3)
@@ -213,9 +236,11 @@ class Nutrient:
         return self.group
     def get_unit(self):
         return self.unit
+    def get_my_food(self):
+        return self.my_food
     def Nutrient_Info(self):
         if self.rda != None:
-            return "{}{} {} RDA: \n{}".format(str(self.value),str(self.unit),self.name,self.rda_message)
+            return "{}{} {}\n{}".format(str(self.value),str(self.unit),self.name,self.rda_message)
         else:
             return "{}{} {}".format(str(self.value),str(self.unit),self.name)
 
@@ -241,5 +266,5 @@ def search(name):
     response = requests.get(url=url + "/search", params=params).text
     return json.loads(response)
 
-emptynutrient = Nutrient(None, None, None, None, None)
+emptynutrient = Nutrient(None, None, None, None, None, None)
 emptyfood = Food((emptynutrient, emptynutrient))
