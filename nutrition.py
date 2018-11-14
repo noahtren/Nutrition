@@ -1,5 +1,6 @@
 import requests
 import json
+import operator
 
 url = "https://api.nal.usda.gov/usda/ndb"
 key = open("key.txt").read()
@@ -126,18 +127,18 @@ class Meal:
         return self.groups
     def Get_Foods(self):
         return self.foods
-    def Nutrient_Analysis(self, nutrient):
+    def Nutrient_Analysis(self, nutrient_name):
         # return top contributors to nutrient
         nutrients = []
         total_val = 0
-        recommended_value = recommended_amounts[nutrient]
+        recommended_value = recommended_amounts[nutrient_name]
         for food in self.foods:
             for nutrient_group in food.Get_Nutrients():
                 for nutrient in nutrient_group:
-                    if (nutrient.get_name() == nutrient):
+                    if (nutrient.get_name() == nutrient_name):
                         nutrients.append(nutrient)
                         total_val = total_val + nutrient.get_value()
-        nutrients.sort(key=nutrient.get_value())
+        nutrients.sort(key=operator.attrgetter('value'))
         return nutrients
 
     def Meal_Info(self):
