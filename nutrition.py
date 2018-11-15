@@ -5,21 +5,39 @@ import operator
 url = "https://api.nal.usda.gov/usda/ndb"
 key = open("key.txt").read()
 
+# INPUT
+weight_c = 140
+height_c = 5 * 12 + 10
+sex = "M"
+hours_of_exercise = 1
+age = 19
+fat_percent = .4
+protein_percent = .35
+carb_percent = .25
+# MANIPULATION
+weight_m = .4536 * weight_c
+height_m = 2.54 * height_c
+if (sex == "M"):
+    basal_metabolic_rate = 66 + (13.7*weight_m) + (5*height_m) - (6.8*age)
+else:
+    basal_metabolic_rate = 655 + (9.6*weight_m) + (1.8*height_m) - (4.7*age)
+tdee = basal_metabolic_rate * (1 + hours_of_exercise * .55)
+
 recommended_amounts = {
-    'Energy': (2600, 3400), #kcal
-    'Total lipid (fat)': (70,120),#g
+    'Energy': (tdee*.95, tdee*1.05), #kcal
+    'Total lipid (fat)': (((tdee*.95)/9)*fat_percent,((tdee*1.05)/9)*fat_percent),#9 calories per g 55%
     'Water': (2500, 3500), #g
-    'Protein':(120,200), #g
-    'Carbohydrate, by difference':(350,450), #g
-    'Fiber, total dietary': (30,45),#g
-    'Sugars, total': (20,40),#g
+    'Protein':(((tdee*.95)/4)*protein_percent,((tdee*1.05)/4)*protein_percent), #4 calories per g 35%
+    'Carbohydrate, by difference':(((tdee*.95)/4)*carb_percent,((tdee*1.05)/4)*carb_percent), #4 calories per g 10%
+    'Fiber, total dietary': (0.95*0.014*tdee,1.05*0.014*tdee),#g
+    'Sugars, total': (((tdee*.95)/4)*0.05,((tdee*1.05)/4)*0.05),#g
     'Calcium, Ca':(1000,2500),
     'Iron, Fe':(8,45),
     'Potassium, K':(400,2000),
     'Sodium, Na':(1000,2300),
     'Magnesium, Mg':(300,750),
     'Phosphorus, P':(700,4000),
-    'Zinc, Zn':(12,50),
+    'Zinc, Zn':(12,60),
     'Vitamin E (alpha-tocopherol)':(15,1000),
     'Vitamin K (phylloquinone)':(120,"none"),
     'Vitamin C, total ascorbic acid':(90,2000),
@@ -37,10 +55,10 @@ recommended_amounts = {
     'Selenium':(70,400), #ug
     'Copper':(0.9,10), #mg
     'Caffeine':(0, 400),
-    'Fatty acids, total saturated':(0, 25),
-    'Fatty acids, total monounsaturated':(25,50),
-    'Fatty acids, total polyunsaturated':(12,25),
-    'Fatty acids, total trans':(0,1),
+    'Fatty acids, total saturated':(0, (tdee/9)*(fat_percent/0.3)*.1),
+    'Fatty acids, total monounsaturated':((tdee/9)*(fat_percent/0.3)*.15,(tdee/9)*(fat_percent/0.3)*.2),
+    'Fatty acids, total polyunsaturated':((tdee/9)*(fat_percent/0.3)*.05,(tdee/9)*(fat_percent/0.3)*.1),
+    'Fatty acids, total trans':(0,(tdee/9)*(fat_percent/0.3)*.01),
     'Cholesterol':(0, 300)
 }
 
@@ -131,15 +149,14 @@ class Meal:
         # return top contributors to nutrient
         nutrients = []
         total_val = 0
-        recommended_value = recommended_amounts[nutrient_name]
         for food in self.foods:
             for nutrient_group in food.Get_Nutrients():
                 for nutrient in nutrient_group:
                     if (nutrient.get_name() == nutrient_name):
                         nutrients.append(nutrient)
                         total_val = total_val + nutrient.get_value()
-        nutrients.sort(key=operator.attrgetter('value'))
-        return nutrients
+        nutrients.sort(key=operator.attrgetter('value'), reverse=True)
+        return (nutrients, total_val)
 
     def Meal_Info(self):
         return_string = ""
@@ -183,6 +200,7 @@ class Food:
             self.nutrients.append([])
             for nutrient in second:
                 groups.append(nutrient.get_group())
+                nutrient.set_food(self.name)
                 self.nutrients[0].append(nutrient)
             self.groups = groups
             self.grams = "N/A"
@@ -215,7 +233,15 @@ class Nutrient:
         else:
             self.value = value
         try:
-            self.rda = recommended_amounts[name]
+            self.rda = list(recommended_amounts[name])
+            try:
+                self.rda[0] = round(self.rda[0],2)
+            except TypeError:
+                pass
+            try:
+                self.rda[1] = round(self.rda[1],2)
+            except TypeError:
+                pass
             tmp = True
             if (self.rda[1] != "none"):
                 if (self.value > self.rda[1]):
@@ -229,6 +255,8 @@ class Nutrient:
                 self.rda_message = "This is a healthy amount"
         except KeyError:
             self.rda = None
+    def set_food(self, food):
+        self.my_food = food
     def get_value(self):
         return self.value
     def get_name(self):
