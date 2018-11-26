@@ -40,7 +40,7 @@ class Nutrition_Gui:
             self.label_names.append("Group")
             i = i + 1
             for nutrient in group:
-                text = nutrient.Nutrient_Info()
+                text = nutrient.Nutrient_Info(True)
                 if ("healthy" in text):
                     self.nutrient_labels.append(Label(self.master, text=text, bg="green"))
                 elif ("Deficient" in text):
