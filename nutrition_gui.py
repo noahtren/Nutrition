@@ -41,11 +41,11 @@ class Nutrition_Gui:
             i = i + 1
             for nutrient in group:
                 text = nutrient.Info(True)
-                if ("healthy" in text):
+                if ("healthy" in text.lower()):
                     self.nutrient_labels.append(Label(self.master, text=text, bg="#7aff7a", justify=LEFT))
-                elif ("Deficient" in text):
+                elif ("deficient" in text.lower()):
                     self.nutrient_labels.append(Label(self.master, text=text, bg="#ffff7a", justify=LEFT))
-                elif ("Too much" in text):
+                elif ("too much" in text.lower()):
                     self.nutrient_labels.append(Label(self.master, text=text, bg ="#ff7a7a", justify=LEFT))
                 else:
                     self.nutrient_labels.append(Label(self.master, text=text))
