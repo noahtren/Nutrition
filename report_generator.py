@@ -11,6 +11,7 @@ report = '''<!DOCTYPE html>
 
 <head>
   <title>Nutrition Report</title>
+  <script src="code.js"></script>
   <link rel="stylesheet" href="styles.css" type="text/css">
 </head>
 
@@ -38,8 +39,10 @@ for group in data["nutrients"]:
             status = "yellow"
         else:
             status = "red"
-        report = report + "\n       <div class=\"nutrient_{}\"><b>{}</b><br />{} {}<br />{}</div>".format(status, nutrient["name"].split("(")[0].strip(" "), nutrient["value"], nutrient["unit"], nutrient["message"].replace("\n", "<br />"))
-        k = k + 1
+        report = report + '''\n       <div class=\"nutrient_{}\" id="parent"><b>{}</b><br />{} {}<br />{}</div>'''.format(status, 
+        nutrient["name"].split("(")[0].strip(" ").replace("Fatty acids", "Fat"), nutrient["value"], 
+        nutrient["unit"], nutrient["message"].replace("\n", "<br />"))
+        k = k + 1 
     report = report + "</div></div>"
     i = i + 1
 

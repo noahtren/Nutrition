@@ -3,50 +3,51 @@
 
 <head>
   <title>Nutrition Report</title>
+  <script src="code.js"></script>
   <link rel="stylesheet" href="styles.css" type="text/css">
 </head>
 
 <body><div class="page">
 <div class="container">
    <div class="title">Proximates</div><div class="grid">
-       <div class="nutrient_green"><b>Water</b><br />2707.756 g<br />Healthy amount</div>
-       <div class="nutrient_yellow"><b>Energy</b><br />2025.665 kcal<br />Deficient<br />Goal > 2244.33kcal</div>
-       <div class="nutrient_yellow"><b>Protein</b><br />104.006 g<br />Deficient<br />Goal > 140.27g</div></div><div class="grid">
-       <div class="nutrient_green"><b>Total lipid</b><br />87.818 g<br />Healthy amount</div>
-       <div class="nutrient_yellow"><b>Carbohydrate, by difference</b><br />213.127 g<br />Deficient<br />Goal > 224.43g</div>
-       <div class="nutrient_yellow"><b>Fiber, total dietary</b><br />24.481 g<br />Deficient<br />Goal > 32.1g</div></div><div class="grid">
-       <div class="nutrient_green"><b>Sugars, total</b><br />47.718 g<br />Healthy amount</div></div></div>
+       <div class="nutrient_green" id="parent"><b>Water</b><br />2707.756 g<br />Healthy amount</div>
+       <div class="nutrient_yellow" id="parent"><b>Energy</b><br />2025.665 kcal<br />Deficient<br />Goal > 2244.33kcal</div>
+       <div class="nutrient_yellow" id="parent"><b>Protein</b><br />104.006 g<br />Deficient<br />Goal > 140.27g</div></div><div class="grid">
+       <div class="nutrient_green" id="parent"><b>Total lipid</b><br />87.818 g<br />Healthy amount</div>
+       <div class="nutrient_yellow" id="parent"><b>Carbohydrate, by difference</b><br />213.127 g<br />Deficient<br />Goal > 224.43g</div>
+       <div class="nutrient_yellow" id="parent"><b>Fiber, total dietary</b><br />24.481 g<br />Deficient<br />Goal > 32.1g</div></div><div class="grid">
+       <div class="nutrient_green" id="parent"><b>Sugars, total</b><br />47.718 g<br />Healthy amount</div></div></div>
 <div class="container">
    <div class="title">Minerals</div><div class="grid">
-       <div class="nutrient_yellow"><b>Calcium, Ca</b><br />891.945 mg<br />Deficient<br />Goal > 1000mg</div>
-       <div class="nutrient_green"><b>Iron, Fe</b><br />14.025 mg<br />Healthy amount</div>
-       <div class="nutrient_green"><b>Magnesium, Mg</b><br />461.355 mg<br />Healthy amount</div></div><div class="grid">
-       <div class="nutrient_green"><b>Phosphorus, P</b><br />1658.97 mg<br />Healthy amount</div>
-       <div class="nutrient_green"><b>Potassium, K</b><br />2687.845 mg<br />Healthy amount</div>
-       <div class="nutrient_green"><b>Sodium, Na</b><br />1049.84 mg<br />Healthy amount</div></div><div class="grid">
-       <div class="nutrient_green"><b>Zinc, Zn</b><br />55.923 mg<br />Healthy amount</div></div></div></div><div class="page">
+       <div class="nutrient_yellow" id="parent"><b>Calcium, Ca</b><br />891.945 mg<br />Deficient<br />Goal > 1000mg</div>
+       <div class="nutrient_green" id="parent"><b>Iron, Fe</b><br />14.025 mg<br />Healthy amount</div>
+       <div class="nutrient_green" id="parent"><b>Magnesium, Mg</b><br />461.355 mg<br />Healthy amount</div></div><div class="grid">
+       <div class="nutrient_green" id="parent"><b>Phosphorus, P</b><br />1658.97 mg<br />Healthy amount</div>
+       <div class="nutrient_green" id="parent"><b>Potassium, K</b><br />2687.845 mg<br />Healthy amount</div>
+       <div class="nutrient_green" id="parent"><b>Sodium, Na</b><br />1049.84 mg<br />Healthy amount</div></div><div class="grid">
+       <div class="nutrient_green" id="parent"><b>Zinc, Zn</b><br />55.923 mg<br />Healthy amount</div></div></div></div><div class="page">
 <div class="container">
    <div class="title">Vitamins</div><div class="grid">
-       <div class="nutrient_green"><b>Vitamin C, total ascorbic acid</b><br />120.599 mg<br />Healthy amount</div>
-       <div class="nutrient_green"><b>Thiamin</b><br />1.823 mg<br />Healthy amount</div>
-       <div class="nutrient_green"><b>Riboflavin</b><br />1.954 mg<br />Healthy amount</div></div><div class="grid">
-       <div class="nutrient_green"><b>Niacin</b><br />39.951 mg<br />Healthy amount</div>
-       <div class="nutrient_green"><b>Vitamin B-6</b><br />2.196 mg<br />Healthy amount</div>
-       <div class="nutrient_green"><b>Folate, DFE</b><br />622.365 µg<br />Healthy amount</div></div><div class="grid">
-       <div class="nutrient_yellow"><b>Vitamin A, RAE</b><br />528.735 µg<br />Deficient<br />Goal > 900µg</div>
-       <div class="nutrient_green"><b>Vitamin A, IU</b><br />8405.355 IU<br />Healthy amount</div>
-       <div class="nutrient_green"><b>Vitamin E</b><br />16.232 mg<br />Healthy amount</div></div><div class="grid">
-       <div class="nutrient_green"><b>Vitamin K</b><br />223.36 µg<br />Healthy amount</div>
-       <div class="nutrient_yellow"><b>Vitamin B-12</b><br />1.664 µg<br />Deficient<br />Goal > 2.4µg</div>
-       <div class="nutrient_green"><b>Vitamin D</b><br />1.36 µg<br />Healthy amount</div></div><div class="grid">
-       <div class="nutrient_green"><b>Vitamin D</b><br />2054.8 IU<br />Healthy amount</div></div></div>
+       <div class="nutrient_green" id="parent"><b>Vitamin C, total ascorbic acid</b><br />120.599 mg<br />Healthy amount</div>
+       <div class="nutrient_green" id="parent"><b>Thiamin</b><br />1.823 mg<br />Healthy amount</div>
+       <div class="nutrient_green" id="parent"><b>Riboflavin</b><br />1.954 mg<br />Healthy amount</div></div><div class="grid">
+       <div class="nutrient_green" id="parent"><b>Niacin</b><br />39.951 mg<br />Healthy amount</div>
+       <div class="nutrient_green" id="parent"><b>Vitamin B-6</b><br />2.196 mg<br />Healthy amount</div>
+       <div class="nutrient_green" id="parent"><b>Folate, DFE</b><br />622.365 µg<br />Healthy amount</div></div><div class="grid">
+       <div class="nutrient_yellow" id="parent"><b>Vitamin A, RAE</b><br />528.735 µg<br />Deficient<br />Goal > 900µg</div>
+       <div class="nutrient_green" id="parent"><b>Vitamin A, IU</b><br />8405.355 IU<br />Healthy amount</div>
+       <div class="nutrient_green" id="parent"><b>Vitamin E</b><br />16.232 mg<br />Healthy amount</div></div><div class="grid">
+       <div class="nutrient_green" id="parent"><b>Vitamin K</b><br />223.36 µg<br />Healthy amount</div>
+       <div class="nutrient_yellow" id="parent"><b>Vitamin B-12</b><br />1.664 µg<br />Deficient<br />Goal > 2.4µg</div>
+       <div class="nutrient_green" id="parent"><b>Vitamin D</b><br />1.36 µg<br />Healthy amount</div></div><div class="grid">
+       <div class="nutrient_green" id="parent"><b>Vitamin D</b><br />2054.8 IU<br />Healthy amount</div></div></div>
 <div class="container">
    <div class="title">Lipids</div><div class="grid">
-       <div class="nutrient_green"><b>Fatty acids, total saturated</b><br />18.261 g<br />Healthy amount</div>
-       <div class="nutrient_yellow"><b>Fatty acids, total monounsaturated</b><br />36.801 g<br />Deficient<br />Goal > 46.92g</div>
-       <div class="nutrient_green"><b>Fatty acids, total polyunsaturated</b><br />26.577 g<br />Healthy amount</div></div><div class="grid">
-       <div class="nutrient_green"><b>Fatty acids, total trans</b><br />0.554 g<br />Healthy amount</div>
-       <div class="nutrient_red"><b>Cholesterol</b><br />373.8 mg<br />Too much<br />Goal < 300mg</div></div></div></div><div class="page">
+       <div class="nutrient_green" id="parent"><b>Fat, total saturated</b><br />18.261 g<br />Healthy amount</div>
+       <div class="nutrient_yellow" id="parent"><b>Fat, total monounsaturated</b><br />36.801 g<br />Deficient<br />Goal > 46.92g</div>
+       <div class="nutrient_green" id="parent"><b>Fat, total polyunsaturated</b><br />26.577 g<br />Healthy amount</div></div><div class="grid">
+       <div class="nutrient_green" id="parent"><b>Fat, total trans</b><br />0.554 g<br />Healthy amount</div>
+       <div class="nutrient_red" id="parent"><b>Cholesterol</b><br />373.8 mg<br />Too much<br />Goal < 300mg</div></div></div></div><div class="page">
 <div class="container">
    <div class="title">Other</div><div class="grid">
-       <div class="nutrient_green"><b>Caffeine</b><br />220.5 mg<br />Healthy amount</div></div></div></div></body></html>
+       <div class="nutrient_green" id="parent"><b>Caffeine</b><br />220.5 mg<br />Healthy amount</div></div></div></div></body></html>
