@@ -76,6 +76,14 @@ class Meal:
         # all finished! The list of foods has been turned into a master list of each nutrient
         self.nutrients = grouped_nutrients
         self.groups = groups
+    def Export(self, name):
+        export_file = open("{}.json".format(name), "w")
+        nutrients = []
+        for nutrient_group in self.nutrients:
+            for nutrient in nutrient_group:
+                nutrients.append(nutrient.Dict())
+        data = dict(groups=self.groups, nutrients=nutrients)
+        json.dump(data, export_file)
     def Nutrient_Analysis(self, nutrient_name):
         # This is used to tell the top foods that contribute to certain nutrients
         # This is returned in a sorted list of nutrient objects, which contain their
@@ -184,6 +192,14 @@ class Nutrient:
                 self.rda_message = "This is a healthy amount"
         except KeyError:
             self.rda = None
+    def Dict(self):
+        return_dict = dict(
+            name=self.name,
+            value=self.value,
+            unit=self.unit,
+            message=self.rda_message
+        )
+        return return_dict
     def Info(self, display_rda):
         if (self.rda != None) and display_rda:
             return "{}\n{}{}\n{}".format(self.name,str(self.value),str(self.unit),self.rda_message)
