@@ -1,83 +1,26 @@
 import requests
 import json
 import operator
+from profile import recommended_amounts
 
 url = "https://api.nal.usda.gov/usda/ndb"
 key = open("key.txt").read()
 
-# This portion is entirely customizable
-weight_c = 140
-height_c = 5 * 12 + 10
-sex = "M"
-hours_of_exercise = .6
-age = 19
-fat_percent = .35
-protein_percent = .25
-carb_percent = .40
-admittance_percent = 7 # how accurate do you want your rda values to be? Within +- this percent
-# Conversion and calculation of bmr and tdee (basal metabolic rate, total daily energy expenditure)
-weight_m = .4536 * weight_c
-height_m = 2.54 * height_c
-if (sex == "M"):
-    bmr = 66 + (13.7*weight_m) + (5*height_m) - (6.8*age)
-else:
-    bmr = 655 + (9.6*weight_m) + (1.8*height_m) - (4.7*age)
-tdee = bmr * (1 + hours_of_exercise * .55)
-top = tdee * (1 + admittance_percent * 0.01)
-bot = tdee * (1 - admittance_percent * 0.01)
-recommended_amounts = {
-    'Energy': (bot, top), #kcal
-    'Total lipid (fat)': ((bot/9)*fat_percent,(top/9)*fat_percent),#9 calories per g 55%
-    'Water': (2500, 3500), #g
-    'Protein':((bot/4)*protein_percent,(top/4)*protein_percent), #4 calories per g 35%
-    'Carbohydrate, by difference':((bot/4)*carb_percent,(top/4)*carb_percent), #4 calories per g 10%
-    'Fiber, total dietary': (0.95*0.014*tdee,1.05*0.014*tdee),#g
-    'Sugars, total': ((bot/4)*0.05,(top/4)*0.1),#g
-    'Calcium, Ca':(1000,2500),
-    'Iron, Fe':(8,45),
-    'Potassium, K':(1400,6000),
-    'Sodium, Na':(1000,2300),
-    'Magnesium, Mg':(300,750),
-    'Phosphorus, P':(700,4000),
-    'Zinc, Zn':(12,100),
-    'Vitamin E (alpha-tocopherol)':(15,1000),
-    'Vitamin K (phylloquinone)':(120,"none"),
-    'Vitamin C, total ascorbic acid':(90,2000),
-    'Thiamin':(1.2,"none"),
-    'Riboflavin':(1.3,"none"),
-    'Niacin':(16,"none"), # make sure you can't have too much of this
-    'Vitamin B-6':(1.3,100),
-    'Folate, DFE':(400,1000),
-    'Vitamin A, RAE':(900,3000),
-    'Vitamin A, IU':(900,20000),
-    'Vitamin D (D2 + D3)':("none","none"),
-    'Vitamin D':(1000,8000),
-    'Vitamin B-12':(2.4,"none"),
-    # non-vetted values
-    'Selenium':(70,400), #ug
-    'Copper':(0.9,10), #mg
-    'Caffeine':(0, 400),
-    'Fatty acids, total saturated':(0, (tdee/9)*(fat_percent/0.3)*.1),
-    'Fatty acids, total monounsaturated':((tdee/9)*(fat_percent/0.3)*.15,(tdee/9)*(fat_percent/0.3)*.2),
-    'Fatty acids, total polyunsaturated':((tdee/9)*(fat_percent/0.3)*.05,(tdee/9)*(fat_percent/0.3)*.1),
-    'Fatty acids, total trans':(0,(tdee/9)*(fat_percent/0.3)*.01),
-    'Cholesterol':(0, 300)
-}
-
 class Results:
-    def __init__(self, data):
-        try:
-            self.result = True
-            result_json = data["list"]["item"]
-            names = []
-            ids = []
-            for result in range(0, len(result_json)):
-                names.append(result_json[result]["name"])
-                ids.append(result_json[result]["ndbno"])
-            self.names = names
-            self.ids = ids
-        except KeyError:
-            self.result = False
+    def __init__(self, data, flav=False):
+        if not flav:
+            try:
+                self.result = True
+                result_json = data["list"]["item"]
+                names = []
+                ids = []
+                for result in range(0, len(result_json)):
+                    names.append(result_json[result]["name"])
+                    ids.append(result_json[result]["ndbno"])
+                self.names = names
+                self.ids = ids
+            except KeyError:
+                self.result = False
     def Search_Info(self):
         if self.result:
             return_string = ""
@@ -86,8 +29,6 @@ class Results:
             return return_string
         else:
             return "No results"
-    def Get_Result(self, index):
-        return self.ids[index]
 class Day:
     def __init__(self, meals):
         self.foods = []
@@ -96,7 +37,7 @@ class Day:
                 self.foods.append(food)
         self.meal = Meal(self.foods)
     def Display_Day(self):
-        return self.meal.Meal_Info()
+        return self.meal.Meal_Info(True)
     def Get_Meal(self):
         return self.meal
 class Meal:
@@ -115,17 +56,17 @@ class Meal:
                     grouped_names.append([])
             for nutrient_group in food.Get_Nutrients():
                 for nutrient in nutrient_group:
-                    if ((nutrient.get_name() not in names) and (nutrient.get_name() != None)):
-                        names.append(nutrient.get_name())
-                        units.append(nutrient.get_unit())
-                    if (nutrient.get_name() != None):
-                        if (units[names.index(nutrient.get_name())] != nutrient.get_unit()):
+                    if ((nutrient.name not in names) and (nutrient.name != None)):
+                        names.append(nutrient.name)
+                        units.append(nutrient.unit)
+                    if (nutrient.name != None):
+                        if (units[names.index(nutrient.name)] != nutrient.unit):
                             print("This is a problem")
                 for group in groups:
                     for nutrient in nutrient_group:
-                        if nutrient.get_group() == group:
-                            if nutrient.get_name() not in grouped_names[groups.index(group)]:
-                                grouped_names[groups.index(group)].append(nutrient.get_name())
+                        if nutrient.group == group:
+                            if nutrient.name not in grouped_names[groups.index(group)]:
+                                grouped_names[groups.index(group)].append(nutrient.name)
         # we have a full list of all of the groups
         # now get a full list of all the nutrient names
         namevalues = [0] * len(names)
@@ -133,8 +74,8 @@ class Meal:
             for food in self.foods:
                 for nutrient_group in food.Get_Nutrients():
                     for nutrient in nutrient_group:
-                        if (nutrient.get_name() == name):
-                            namevalues[names.index(name)] += nutrient.get_value()
+                        if (nutrient.name == name):
+                            namevalues[names.index(name)] += nutrient.value
         grouped_nutrients = []
         for group in grouped_names:
             grouped_nutrients.append([])
@@ -156,22 +97,22 @@ class Meal:
         for food in self.foods:
             for nutrient_group in food.Get_Nutrients():
                 for nutrient in nutrient_group:
-                    if (nutrient.get_name() == nutrient_name):
+                    if (nutrient.name == nutrient_name):
                         nutrients.append(nutrient)
                         total_val = total_val + nutrient.get_value()
         nutrients.sort(key=operator.attrgetter('value'), reverse=True)
         return (nutrients, total_val)
 
-    def Meal_Info(self):
+    def Meal_Info(self, display_rda=False):
         return_string = ""
         for group_num in range(0, len(self.nutrients)):
             return_string = return_string + "\n\n" + self.groups[group_num]
             for nutrient in self.nutrients[group_num]:
-                return_string = return_string + "\n" + nutrient.Nutrient_Info()
+                return_string = return_string + "\n" + nutrient.Info(display_rda)
         return return_string
 
 class Food:
-    def __init__(self, first, second=None, third=None): #first is data, second is grams
+    def __init__(self, first, second=None): #first is data, second is grams
                                     # first is name, second is nutrient
         if second == None:
             self.nutrients = None
@@ -179,7 +120,7 @@ class Food:
             self.id = None
             self.grams = None
             self.groups = None
-        elif third == None:
+        elif type(second) is int or type(second) is float:
             nutrient_json = first["foods"][0]["food"]["nutrients"]
             groups = [] # proximates, lipids, etc
             grouped_nutrients = []
@@ -203,8 +144,8 @@ class Food:
             self.nutrients = []
             self.nutrients.append([])
             for nutrient in second:
-                groups.append(nutrient.get_group())
-                nutrient.set_food(self.name)
+                groups.append(nutrient.group)
+                nutrient.food = self.name
                 self.nutrients[0].append(nutrient)
             self.groups = groups
             self.grams = "N/A"
@@ -222,7 +163,7 @@ class Food:
         for group_num in range(0, len(self.nutrients)):
             return_string = return_string + "\n\n" + self.groups[group_num]
             for nutrient in self.nutrients[group_num]:
-                return_string = return_string + "\n" + nutrient.Nutrient_Info(rda)
+                return_string = return_string + "\n" + nutrient.Info(False)
         return return_string
 
 class Nutrient:
@@ -250,34 +191,22 @@ class Nutrient:
             if (self.rda[1] != "none"):
                 if (self.value > self.rda[1]):
                     tmp = False
-                    self.rda_message = "Too much, recommended is less than {}{}".format(self.rda[1],self.unit)
+                    self.rda_message = "Too much, should be < {}{}".format(self.rda[1],self.unit)
             if (self.rda[0]!="none"):
                 if (self.value < self.rda[0]):
                     tmp = False
-                    self.rda_message = "Deficient, recommended is more than {}{}".format(self.rda[0],self.unit)
+                    self.rda_message = "Deficient, recommended > {}{}".format(self.rda[0],self.unit)
             if tmp:
                 self.rda_message = "This is a healthy amount"
         except KeyError:
             self.rda = None
-    def set_food(self, food):
-        self.my_food = food
-    def get_value(self):
-        return self.value
-    def get_name(self):
-        return self.name
-    def get_group(self):
-        return self.group
-    def get_unit(self):
-        return self.unit
-    def get_my_food(self):
-        return self.my_food
-    def Nutrient_Info(self, rda):
-        if (self.rda != None) and rda:
-            return "{}{} {}\n{}".format(str(self.value),str(self.unit),self.name,self.rda_message)
+    def Info(self, display_rda):
+        if (self.rda != None) and display_rda:
+            return "{}\n{}{}\n{}".format(self.name,str(self.value),str(self.unit),self.rda_message)
         else:
-            return "{}{} {}".format(str(self.value),str(self.unit),self.name)
+            return "{}\n{}\n {}".format(str(self.value),str(self.unit),self.name)
 
-def get_food_data(food_id):
+def access_database(food_id):
     params = dict(
         ndbno=str(food_id),
         type='b', 
@@ -297,7 +226,9 @@ def search(name):
         api_key=key
     )
     response = requests.get(url=url + "/search", params=params).text
-    return json.loads(response)
+    usda_data = json.loads(response)
+    
+    return usda_data
 
 emptynutrient = Nutrient(None, None, None, None, None, None)
 emptyfood = Food((emptynutrient, emptynutrient))
