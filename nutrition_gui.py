@@ -1,9 +1,9 @@
 from tkinter import *
+from ctypes import windll
 class Nutrition_Gui:
     def __init__(self, day):
-        # GUI STUFF
+        windll.shcore.SetProcessDpiAwareness(1)
         self.master = Tk()
-
         self.day = day
         # Daily nutrient display
         self.nutrient_labels = []
@@ -30,8 +30,8 @@ class Nutrition_Gui:
                 self.info_labels.append([])
             if (len(self.info_labels_text) <= nutrients.index(nutrient)):
                 self.info_labels_text.append(StringVar(""))
-            self.info_labels_text[nutrients.index(nutrient)].set("{}{} in \n{}".format(nutrient.get_value(), nutrient.get_unit(), nutrient.get_my_food()))
-            self.info_labels[nutrients.index(nutrient)] = Label(self.master,bg=self.rgb_convert(255-int(255*(nutrient.get_value()/nutrients[0].get_value())),255,255-int(255*(nutrient.get_value()/nutrients[0].get_value()))),textvariable=self.info_labels_text[nutrients.index(nutrient)])
+            self.info_labels_text[nutrients.index(nutrient)].set("{}{} in \n{}".format(nutrient.value, nutrient.unit, nutrient.my_food))
+            self.info_labels[nutrients.index(nutrient)] = Label(self.master,bg=self.rgb_convert(255-int(255*(nutrient.value/nutrients[0].value)),255,255-int(255*(nutrient.value/nutrients[0].value))),textvariable=self.info_labels_text[nutrients.index(nutrient)])
             self.info_labels[nutrients.index(nutrient)].grid(row=nutrients.index(nutrient),column=len(self.grouped_nutrients))
     def setup(self):
         i = 0
@@ -40,16 +40,16 @@ class Nutrition_Gui:
             self.label_names.append("Group")
             i = i + 1
             for nutrient in group:
-                text = nutrient.Nutrient_Info(True)
+                text = nutrient.Info(True)
                 if ("healthy" in text):
-                    self.nutrient_labels.append(Label(self.master, text=text, bg="green"))
+                    self.nutrient_labels.append(Label(self.master, text=text, bg="#7aff7a", justify=LEFT))
                 elif ("Deficient" in text):
-                    self.nutrient_labels.append(Label(self.master, text=text, bg="yellow"))
+                    self.nutrient_labels.append(Label(self.master, text=text, bg="#ffff7a", justify=LEFT))
                 elif ("Too much" in text):
-                    self.nutrient_labels.append(Label(self.master, text=text, bg ="red"))
+                    self.nutrient_labels.append(Label(self.master, text=text, bg ="#ff7a7a", justify=LEFT))
                 else:
                     self.nutrient_labels.append(Label(self.master, text=text))
                 self.nutrient_labels[i].grid(row=group.index(nutrient)+1,column=self.grouped_nutrients.index(group))
                 self.nutrient_labels[i].bind("<Enter>",self.hover_box)
-                self.label_names.append(nutrient.get_name())
+                self.label_names.append(nutrient.name)
                 i = i + 1
