@@ -80,8 +80,9 @@ class Meal:
         export_file = open("{}.json".format(name), "w")
         nutrients = []
         for nutrient_group in self.nutrients:
+            nutrients.append([])
             for nutrient in nutrient_group:
-                nutrients.append(nutrient.Dict())
+                nutrients[self.nutrients.index(nutrient_group)].append(nutrient.Dict())
         data = dict(groups=self.groups, nutrients=nutrients)
         json.dump(data, export_file)
     def Nutrient_Analysis(self, nutrient_name):
@@ -183,13 +184,13 @@ class Nutrient:
             if (self.rda[1] != "none"):
                 if (self.value > self.rda[1]):
                     tmp = False
-                    self.rda_message = "Too much, should be < {}{}".format(self.rda[1],self.unit)
+                    self.rda_message = "Too much\nGoal < {}{}".format(self.rda[1],self.unit)
             if (self.rda[0]!="none"):
                 if (self.value < self.rda[0]):
                     tmp = False
-                    self.rda_message = "Deficient, recommended > {}{}".format(self.rda[0],self.unit)
+                    self.rda_message = "Deficient\nGoal > {}{}".format(self.rda[0],self.unit)
             if tmp:
-                self.rda_message = "This is a healthy amount"
+                self.rda_message = "Healthy amount"
         except KeyError:
             self.rda = None
     def Dict(self):
