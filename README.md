@@ -1,5 +1,7 @@
 # USDA Nutrition
 Working with data from the [USDA Food Composition Database](https://ndb.nal.usda.gov/ndb/).
+End result:
+![Nutrition Report](http://noahtrenaman.com/media/sample_report.PNG)
 
 ## The Data
 The USDA provides a database and API with nutrient information of foods broken into two categories, Standard Reference (SR) and Branded Foods (BF). This program makes use of the Standard Reference dataset, allowing for relevant nutritional value of unprocessed foods and some generic processed foods. The motive of writing this program was to determine what an ideal day would look like for nutrition. This is done by computing the recommended daily amounts of different nutrients and comparing them with the amounts provided in different food choices throughout a day.
