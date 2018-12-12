@@ -11,7 +11,6 @@ def read_day():
             food_dict = day_dict[meal][food]
             food_dict["meal"] = meal
             if 'nutrients' not in food_dict.keys():
-                pass
                 food_objs.append(Food(access_database(food_dict["id"]), food_dict["grams"]))
             else:
                 nutrient_objs = []
