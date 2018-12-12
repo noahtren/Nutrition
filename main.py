@@ -4,4 +4,4 @@ from nutrition import *
 from nutrition_gui import *
 
 day_obj = reader.read_day()
-my_gui = Nutrition_Gui(day_obj.Get_Meal())
+my_gui = Nutrition_Gui(day_obj.meal)
