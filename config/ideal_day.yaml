@@ -1,0 +1,54 @@
+day:
+  meals:
+    Morning_Smoothie:
+      raspberry: { id: '09518', grams: 20 }
+      blueberry: { id: '09054', grams: 20 }
+      oj: { id: '14064', grams: 100 }
+      chia: { id: '12006', grams: 12 }
+    Breakfast:
+      egg: { id: '01132', grams: 60 }
+      banana: { id: '09040', grams: 60 }
+      yogurt: { id: '01284', grams: 100 }
+    Lunch:
+      noodles: { id: '20110', grams: 200 }
+      red_pepper: { id: '11823', grams: 20 }
+      onion: { id: '11282', grams: 10 }
+      tofu: { id: '16162', grams: 30 }
+      chicken2: { id: '05136', grams: 60 }
+      sauce: { id: '27050', grams: 20 }
+    Snacks:
+      peanut_butter: { id: '16098', grams: 40 }
+      pretzels: { id: '19047', grams: 25 }
+    Afternoon_Salad:
+      olive_oil: { id: '04053', grams: 15 }
+      spinach: { id: '11457', grams: 30 }
+      carrots: { id: '11124', grams: 20 }
+      sunflowerseeds: { id: '12537', grams: 20 }
+      mushrooms: { id: '11238', grams: 20 }
+      broccoli1: { id: '11093', grams: 40 }
+      peas: { id: '11300', grams: 15 }
+      beans: { id: '16015', grams: 15 }
+    Dinner:
+      rice: { id: '20037', grams: 220 }
+      broccoli: { id: '11093', grams: 20 }
+      pepper: { id: '02030', grams: 0.5 }
+      chicken: { id: '05136', grams: 100 }
+    Supplements:
+      vitamin_d_supplement: 
+        nutrients:
+          - { name: 'Vitamin D', group: 'Vitamins', value: 2000, unit: 'IU' }
+      zinc_supplement: 
+        nutrients:
+          - { name: 'Zinc, Zn', group: 'Minerals', value: 45, unit: 'mg'}
+      fish_oil_supplement: 
+        nutrients:
+          - { name: 'Fatty acids, total polyunsaturated', group: 'Lipids', value: 2, unit: 'g'}
+      garlic_supplement: { id: 11215, grams: 1 }
+      calcium_supplement: 
+        nutrients:
+          - { name: 'Calcium, Ca', group: 'Minerals', value: 400, unit: 'mg' }
+    Beverages:
+      green_tea: { id: '14278', grams: 450}
+      coffee: { id: '14180', grams: 450}
+      creamer: { id: '16261', grams: 30}
+      water: { id: '14555', grams: 900}

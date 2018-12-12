@@ -1,0 +1,17 @@
+# ========== Personal Info ==========
+pounds: 140
+feet: 5
+inches: 11
+age: 19
+# m for male, f for female
+sex: m
+# this value could and often will be a decimal, i.e. 0.5 = 30 minutes of exercise
+hours_of_exercise: 0.75
+# ========== Dietary Goals ==========
+# determine how you'd like to split your calories between different macronutrients
+carb_percent: 40
+protein_percent: 25
+fat_percent: 35
+# ========== Program Parameters ==========
+# what percent of calories above or below your goal will you allow?
+leniency: 5
