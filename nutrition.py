@@ -1,67 +1,58 @@
 import requests
 import json
 import operator
+import os
 from profile import recommended_amounts
 
+local_usda_foods = []
 url = "https://api.nal.usda.gov/usda/ndb"
-key = open("key.txt").read()
+try:
+    key = open("key.txt").read()
+except FileNotFoundError:
+    print("key.txt not found in working directory! Please obtain a key from https://ndb.nal.usda.gov")
+    exit()
 
-class Results:
-    def __init__(self, data, flav=False):
-        if not flav:
-            try:
-                self.result = True
-                result_json = data["list"]["item"]
-                names = []
-                ids = []
-                for result in range(0, len(result_json)):
-                    names.append(result_json[result]["name"])
-                    ids.append(result_json[result]["ndbno"])
-                self.names = names
-                self.ids = ids
-            except KeyError:
-                self.result = False
-    def Search_Info(self):
-        if self.result:
-            return_string = ""
-            for i in range(0, len(self.names)):
-                return_string = return_string + "{}: {}\n".format(self.names[i],self.ids[i])
-            return return_string
-        else:
-            return "No results"
+'''
+Day to Nutrient Hierarchy:
+>> Days contain meals
+    >> Meals contain foods
+        >> Foods contain nutrients
+A food object can be used for full analysis of nutrition. A meal is a bunch of foods combined
+in context of the recommended daily amounts of a given profile
+'''
 class Day:
     def __init__(self, meals):
         self.foods = []
         for meal in meals:
-            for food in meal.Get_Foods():
+            for food in meal.foods:
                 self.foods.append(food)
         self.meal = Meal(self.foods)
     def Display_Day(self):
         return self.meal.Meal_Info(True)
-    def Get_Meal(self):
-        return self.meal
 class Meal:
     def __init__(self, foods):
         self.foods = foods
         # be able to return a list of grouped nutrients
+        # a meal's nutrients are the sum of its food's nutrients
         groups = []
         names = []
         grouped_names = []
         units = []
         tmp = False
         for food in self.foods:
-            for group in food.Get_Groups():
+            for group in food.groups:
                 if (group not in groups) and (group != None):
                     groups.append(group)
                     grouped_names.append([])
-            for nutrient_group in food.Get_Nutrients():
+            for nutrient_group in food.nutrients:
                 for nutrient in nutrient_group:
-                    if ((nutrient.name not in names) and (nutrient.name != None)):
-                        names.append(nutrient.name)
-                        units.append(nutrient.unit)
-                    if (nutrient.name != None):
-                        if (units[names.index(nutrient.name)] != nutrient.unit):
-                            print("This is a problem")
+                    if nutrient.name != None:
+                        if nutrient.name not in names:
+                            names.append(nutrient.name)
+                            units.append(nutrient.unit)
+                        if units[names.index(nutrient.name)] != nutrient.unit:
+                            print("Unexpected Error: the units of two entries for the same nutrient don't match!")
+                            exit()
                 for group in groups:
                     for nutrient in nutrient_group:
                         if nutrient.group == group:
@@ -72,7 +63,7 @@ class Meal:
         namevalues = [0] * len(names)
         for name in names: # calories, calcium, potassium, etc.
             for food in self.foods:
-                for nutrient_group in food.Get_Nutrients():
+                for nutrient_group in food.nutrients:
                     for nutrient in nutrient_group:
                         if (nutrient.name == name):
                             namevalues[names.index(name)] += nutrient.value
@@ -82,24 +73,21 @@ class Meal:
             for name in group:
                 if (name != None):
                     grouped_nutrients[grouped_names.index(group)].append(Nutrient(name, group, namevalues[names.index(name)], units[names.index(name)], 100, "MEAL"))
+        # all finished! The list of foods has been turned into a master list of each nutrient
         self.nutrients = grouped_nutrients
         self.groups = groups
-    def Get_Grouped_Nutrients(self):
-        return self.nutrients
-    def Get_Groups(self):
-        return self.groups
-    def Get_Foods(self):
-        return self.foods
     def Nutrient_Analysis(self, nutrient_name):
-        # return bot contributors to nutrient
+        # This is used to tell the top foods that contribute to certain nutrients
+        # This is returned in a sorted list of nutrient objects, which contain their
+        # component foods
         nutrients = []
         total_val = 0
         for food in self.foods:
-            for nutrient_group in food.Get_Nutrients():
+            for nutrient_group in food.nutrients:
                 for nutrient in nutrient_group:
                     if (nutrient.name == nutrient_name):
                         nutrients.append(nutrient)
-                        total_val = total_val + nutrient.get_value()
+                        total_val = total_val + nutrient.value
         nutrients.sort(key=operator.attrgetter('value'), reverse=True)
         return (nutrients, total_val)
 
@@ -112,15 +100,17 @@ class Meal:
         return return_string
 
 class Food:
-    def __init__(self, first, second=None): #first is data, second is grams
-                                    # first is name, second is nutrient
-        if second == None:
-            self.nutrients = None
-            self.name = None
-            self.id = None
-            self.grams = None
-            self.groups = None
-        elif type(second) is int or type(second) is float:
+    def __init__(self, first, second): 
+        '''
+        Python does not support polymorphic constructors like C++ does
+        The workaround here is to take two arbitrary parameters
+        A Food object can be constructed with data from the database, or from hardcoded nutrients
+        >> For data from the database:
+            first is data, second is grams
+        >> For hardcoded nutrients (see ideal_day.yaml)
+            first is name, second is list of nutrients
+        '''
+        if type(second) is int or type(second) is float:
             nutrient_json = first["foods"][0]["food"]["nutrients"]
             groups = [] # proximates, lipids, etc
             grouped_nutrients = []
@@ -149,12 +139,6 @@ class Food:
                 self.nutrients[0].append(nutrient)
             self.groups = groups
             self.grams = "N/A"
-    def Get_Groups(self):
-        return self.groups
-    def Get_Nutrients(self):
-        return self.nutrients
-    def Get_Name(self):
-        return self.name
     def Food_Info(self, rda=False):
         if self.grams == "N/A":
             return_string = "{}".format(self.name)
@@ -205,15 +189,46 @@ class Nutrient:
             return "{}\n{}{}\n{}".format(self.name,str(self.value),str(self.unit),self.rda_message)
         else:
             return "{}\n{}\n {}".format(str(self.value),str(self.unit),self.name)
+'''
+Working with the USDA database API
+'''
+# Returning results as received from an API call 
+class Results:
+    def __init__(self, data, flav=False):
+        if not flav:
+            try:
+                self.result = True
+                result_json = data["list"]["item"]
+                names = []
+                ids = []
+                for result in range(0, len(result_json)):
+                    names.append(result_json[result]["name"])
+                    ids.append(result_json[result]["ndbno"])
+                self.names = names
+                self.ids = ids
+            except KeyError:
+                self.result = False
+    def Search_Info(self):
+        if self.result:
+            return_string = ""
+            for i in range(0, len(self.names)):
+                return_string = return_string + "{}: {}\n".format(self.names[i],self.ids[i])
+            return return_string
+        else:
+            return "No results"
 
 def access_database(food_id):
-    params = dict(
-        ndbno=str(food_id),
-        type='b', 
-        format='json', 
-        api_key=key
-    )
-    response = requests.get(url=url + "/V2/reports", params=params).text
+    if food_id in local_usda_foods:
+        response = open("usda_foods/{}.json".format(food_id), "r").read()
+    else:
+        params = dict(
+            ndbno=str(food_id),
+            type='b', 
+            format='json', 
+            api_key=key
+        )
+        response = requests.get(url=url + "/V2/reports", params=params).text
+        open("usda_foods/{}.json".format(food_id), "w").write(response)
     return json.loads(response)
 
 def search(name):
@@ -227,8 +242,9 @@ def search(name):
     )
     response = requests.get(url=url + "/search", params=params).text
     usda_data = json.loads(response)
-    
     return usda_data
 
-emptynutrient = Nutrient(None, None, None, None, None, None)
-emptyfood = Food((emptynutrient, emptynutrient))
+# Update list of files that are in local storage
+cwd = os.getcwd()
+for f in os.scandir(cwd+"/usda_foods"):
+    local_usda_foods.append(str(f.name).split(".")[0])
