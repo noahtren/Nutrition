@@ -77,8 +77,8 @@ class Meal:
         # all finished! The list of foods has been turned into a master list of each nutrient
         self.nutrients = grouped_nutrients
         self.groups = groups
-    def Export(self, name):
-        export_file = open("{}.json".format(name), "w")
+    def Export(self, filepath):
+        export_file = open("{}.json".format(filepath), "w")
         nutrients = []
         for nutrient_group in self.nutrients:
             nutrients.append([])

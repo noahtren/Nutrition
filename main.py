@@ -25,5 +25,5 @@ my_gui = Nutrition_Gui(day_obj.meal)
 print("Time build GUI {}".format(str(time.clock() - start)))
 start = time.clock()
 
-day_obj.meal.Export("ideal_day")
+day_obj.meal.Export("reports/ideal_day")
 print("Time to export {}".format(str(time.clock() - start)))
