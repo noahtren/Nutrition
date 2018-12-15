@@ -19,6 +19,7 @@ day:
     Snacks:
       peanut_butter: { id: '16098', grams: 40 }
       pretzels: { id: '19047', grams: 25 }
+      chocolatE: { id: '19081', grams: 20}
     Afternoon_Salad:
       olive_oil: { id: '04053', grams: 15 }
       spinach: { id: '11457', grams: 30 }
