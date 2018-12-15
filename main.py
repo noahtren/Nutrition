@@ -1,3 +1,10 @@
+# Read the user's profile, and their ideal day settings
+# Then display the information in a GUI via tkinter
+# Then export the file in JSON form summarizing the nutrients of the day
+# Then generate a report use HTML
+
+import sys
+sys.path.append("reports")
 import time
 start = time.clock()
 import profile
@@ -27,3 +34,8 @@ start = time.clock()
 
 day_obj.meal.Export("reports/ideal_day")
 print("Time to export {}".format(str(time.clock() - start)))
+start = time.clock()
+
+import report_generator
+report_generator.Gen_Report()
+print("Time to generate HTML report {}".format(str(time.clock() - start)))
