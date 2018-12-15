@@ -79,12 +79,16 @@ class Meal:
         self.groups = groups
     def Export(self, filepath):
         export_file = open("{}.json".format(filepath), "w")
-        nutrients = []
+        day_nutrients = []
         for nutrient_group in self.nutrients:
-            nutrients.append([])
+            day_nutrients.append([])
             for nutrient in nutrient_group:
-                nutrients[self.nutrients.index(nutrient_group)].append(nutrient.Dict())
-        data = dict(groups=self.groups, nutrients=nutrients)
+                day_nutrients[self.nutrients.index(nutrient_group)].append(nutrient.Dict(True))
+        day_data = dict(groups=self.groups, nutrients=day_nutrients)
+        foods = []
+        for food in self.foods:
+            foods.append(food.Dict())
+        data = dict(day=day_data, foods=foods)
         json.dump(data, export_file)
     def Nutrient_Analysis(self, nutrient_name):
         # This is used to tell the top foods that contribute to certain nutrients
@@ -126,6 +130,7 @@ class Food:
             # in this case, the tracked nutrients are from the recommended amount dict
             to_del = []
             for n in nutrient_json:
+                print(n["name"])
                 if n["name"] not in recommended_amounts.keys():
                     to_del.append(nutrient_json.index(n))
             # this algorithm will never take too much time because a list of nutrients
@@ -139,11 +144,11 @@ class Food:
             grouped_nutrients = []
             self.name = first["desc"]["name"]
             for nutrient in nutrient_json:
+                if (nutrient["group"] not in groups):
+                    groups.append(nutrient["group"])
+                    grouped_nutrients.append([])
+                    count = 0
                 if (float(nutrient["value"]) != 0):
-                    if (nutrient["group"] not in groups):
-                        groups.append(nutrient["group"])
-                        grouped_nutrients.append([])
-                        count = 0
                     grouped_nutrients[len(groups)-1].append(Nutrient(nutrient["name"], nutrient["group"], float(nutrient["value"]), nutrient["unit"], second, self.name))
                     count += 1
             self.nutrients = grouped_nutrients
@@ -172,6 +177,15 @@ class Food:
             for nutrient in self.nutrients[group_num]:
                 return_string = return_string + "\n" + nutrient.Info(False)
         return return_string
+    def Dict(self):
+        n = []
+        for ng in self.nutrients:
+            for nutrient in ng:
+                n.append(nutrient.Dict(False))
+        return_dict = dict(
+            name=self.name,
+            nutrients=n)
+        return return_dict
 
 class Nutrient:
     def __init__(self, name, group, value, unit, grams=None, my_food=None):
@@ -207,19 +221,26 @@ class Nutrient:
                 self.rda_message = "Healthy amount"
         except KeyError:
             self.rda = None
-    def Dict(self):
-        return_dict = dict(
-            name=self.name,
-            value=self.value,
-            unit=self.unit,
-            message=self.rda_message
-        )
+    def Dict(self, display_rda):
+        if display_rda:
+            return_dict = dict(
+                name=self.name,
+                value=self.value,
+                unit=self.unit,
+                message=self.rda_message
+            )
+        else:
+            return_dict = dict(
+                name=self.name,
+                value=self.value,
+                unit=self.unit,
+            )
         return return_dict
     def Info(self, display_rda):
         if (self.rda != None) and display_rda:
-            return "{}\n{}{}\n{}".format(self.name,str(self.value),str(self.unit),self.rda_message)
+            return "{}\n{}{}\n{}".format(self.name,str(self.value),self.unit,self.rda_message)
         else:
-            return "{}\n{}\n {}".format(str(self.value),str(self.unit),self.name)
+            return "{}\n{}{}".format(self.name,str(self.value),self.unit)
 '''
 Working with the USDA database API
 '''
@@ -248,26 +269,34 @@ class Results:
         else:
             return "No results"
 
+# if you change this, remember that it doesn't fix local data
 name_filter = ["Energy", "Total lipid (fat)", "Carbohydrate, by difference",
                "Fiber, total dietary", "Sugars, total", "Calcium, Ca", "Iron, Fe",
                "Potassium, K", "Sodium, Na", "Magnesium, Mg", "Phosphorus, P",
                "Zinc, Zn", "Copper, Cu", "Manganese, Mn",
-               "Selenium, Se", "Fluoride, F",
+               "Selenium, Se", "Fluoride, F", "Thiamin", "Riboflavin",
+               "Niacin", "Vitamin B-6", "Pantothenic acid",
                "Vitamin E (alpha-tocopherol)", "Vitamin K (phylloquinone)",
                "Vitamin C, total ascorbic acid", "Folate, total", 
-               "Choline, total",
+               "Choline, total", "Vitamin B-12",
                "Fatty acids, total saturated",
                "Fatty acids, total monounsaturated", "Fatty acids, total polyunsaturated",
-               "Fatty acids, total trans"]
-name_replace = ["Calories", "Fat", "Carbs", "Fiber", "Sugar", "Calcium", "Iron",
+               "Fatty acids, total trans",
+               "18:3 n-3 c,c,c (ALA)", "20:5 n-3 (EPA)", "22:6 n-3 (DHA)"]
+name_replace = ["Calories", "Fat", "Carbs", 
+                "Fiber", "Sugar", "Calcium", "Iron",
                 "Potassium", "Sodium", "Magnesium", "Phosphorus",
                 "Zinc", "Copper", "Manganese",
-                "Selenium", "Fluoride",
+                "Selenium", "Fluoride", "Vitamin B-1 (Thiamine)", "Vitamin B-2 (Riboflavin)",
+                "Vitamin B-3 (Niacin)", "Vitamin B-6 (Pyridoxine)", "Vitamin B-5 (Pantothenic acid)",
                 "Vitamin E", "Vitamin K",
-                "Vitamin C", "Folate", 
-                "Choline", "Saturated",
+                "Vitamin C", "Vitamin B-9 (Folate)", 
+                "Choline", "Vitamin B-12 (Cobalamin)",
+                "Saturated",
                 "Monounsaturated", "Polyunsaturated",
-                "Trans"]
+                "Trans",
+                "Alpha-lipoic acid", "EPA", "DHA"]
+
 def access_database(food_id):
     if len(local_usda_foods) == 0:
         scan_files()
@@ -295,7 +324,11 @@ def access_database(food_id):
         to_del = []
         for n in food_json["nutrients"]:
             if n["name"] in name_filter:
-                n["name"] = name_replace[name_filter.index(n["name"])]
+                try:
+                    n["name"] = name_replace[name_filter.index(n["name"])]
+                except IndexError:
+                    print("There was an error filtering {}".format(n["name"]))
+                    exit()
             if n["name"] == "Calories" and n["unit"] == "kJ":
                 to_del.append(food_json["nutrients"].index(n))
             del n["measures"]; del n["derivation"]; del n["nutrient_id"]
