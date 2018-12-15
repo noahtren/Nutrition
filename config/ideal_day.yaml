@@ -35,18 +35,22 @@ day:
       chicken: { id: '05136', grams: 100 }
     Supplements:
       vitamin_d_supplement: 
+        name: "Vitamin D supplement"
         nutrients:
           - { name: 'Vitamin D', group: 'Vitamins', value: 2000, unit: 'IU' }
       zinc_supplement: 
+        name: "Zinc supplement"
         nutrients:
-          - { name: 'Zinc, Zn', group: 'Minerals', value: 45, unit: 'mg'}
+          - { name: 'Zinc', group: 'Minerals', value: 45, unit: 'mg'}
       fish_oil_supplement: 
+        name: "Fish oil supplement"
         nutrients:
-          - { name: 'Fatty acids, total polyunsaturated', group: 'Lipids', value: 2, unit: 'g'}
+          - { name: 'Polyunsaturated', group: 'Lipids', value: 2, unit: 'g'}
       garlic_supplement: { id: 11215, grams: 1 }
       calcium_supplement: 
+        name: "Calcium supplement"
         nutrients:
-          - { name: 'Calcium, Ca', group: 'Minerals', value: 400, unit: 'mg' }
+          - { name: 'Calcium', group: 'Minerals', value: 400, unit: 'mg' }
     Beverages:
       green_tea: { id: '14278', grams: 450}
       coffee: { id: '14180', grams: 450}
