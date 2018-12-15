@@ -24,6 +24,7 @@ top = tdee * (1 + admittance_percent * 0.01)
 bot = tdee * (1 - admittance_percent * 0.01)
 recommended_amounts = {
     # PROXIMATES
+    'Proximates':'Overview of macronutrients',
     'Calories': (bot, top), #kcal
     'Fat': ((bot/9)*fat_percent,(top/9)*fat_percent),#9 calories per g 55%
     'Water': (2500, 3500), #g
@@ -32,6 +33,7 @@ recommended_amounts = {
     'Fiber': (0.95*0.014*tdee,1.05*0.014*tdee),#g
     'Sugar': ((bot/4)*0.05,(top/4)*0.1),#g - a bunch of monosaccharides
     # MINERALS
+    'Minerals':'Elements that support good health',
     'Calcium':(1000,2500), #mg
     'Iron':(8,45), #mg
     'Potassium':(1400,6000), #mg
@@ -43,26 +45,34 @@ recommended_amounts = {
     'Copper':(0.9,10), #mg
     'Manganese':("none", "none"), #mg
     # VITAMINS
+    'Vitamins':'Essential organic molecules',
     'Vitamin E':(15,1000), # mg - many kinds of tocopherols
     'Vitamin K':(120,"none"), #ug
     'Vitamin C':(90,2000), #mg
-    'Thiamin':(1.2,"none"), # mg
-    'Riboflavin':(1.3,"none"), #mg
-    'Niacin':(16,"none"), #mg
-    'Vitamin B-6':(1.3,100), #mg
-    'Folate':(400,1000), #ug
+    'Vitamin B-1 (Thiamine)':(1.2,"none"), # mg
+    'Vitamin B-2 (Riboflavin)':(1.3,"none"), #mg
+    'Vitamin B-3 (Niacin)':(16,"none"), #mg
+    'Vitamin B-5 (Pantothenic acid)':("none","none"), #mg
+    'Vitamin B-6 (Pyridoxine)':(1.3,100), #mg
+    'Vitamin B-9 (Folate)':(400,1000), #ug
     'Vitamin A, RAE':(900,3000), #ug
     'Vitamin A, IU':(900,20000), # iu
     'Vitamin D (D2 + D3)':("none","none"), # ug
     'Vitamin D':(1000,8000), # iu
-    'Vitamin B-12':(2.4,"none"), # ug
+    'Vitamin B-12 (Cobalamin)':(2.4,"none"), # ug
+    'Choline':("none","none"), # mg
     # OTHER
+    'Other':'Non-required nutrients, often stimulants',
     'Caffeine':(0, 400), #mg
     'Theobromine':("none", "none"), # mg
     # FATS/LIPIDS
+    'Fats':'Key macronutrient that comes in various forms',
     'Saturated':(0, (tdee/9)*(fat_percent/0.3)*.1), #g
     'Monounsaturated':((tdee/9)*(fat_percent/0.3)*.15,(tdee/9)*(fat_percent/0.3)*.2), #g
     'Polyunsaturated':((tdee/9)*(fat_percent/0.3)*.05,(tdee/9)*(fat_percent/0.3)*.1), #g
     'Trans':(0,(tdee/9)*(fat_percent/0.3)*.01), #g
-    'Cholesterol':(0, 300) #mg
+    'Cholesterol':(0, 300), #mg
+    'Alpha-lipoic acid':("none","none"), #g
+    'EPA':("none","none"), #g
+    'DHA':("none","none")
 }
