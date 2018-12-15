@@ -2,9 +2,6 @@ import json
 import codecs
 data = open("ideal_day.json", "r").read()
 data = json.loads(data)
-print(data["groups"])
-for group in data["nutrients"]:
-    print(group)
 
 report = '''<!DOCTYPE html>
 <html>
@@ -46,6 +43,6 @@ for group in data["nutrients"]:
     report = report + "</div></div>"
     i = i + 1
 
-report = report + "</div></body></html>"
+report = report + "\n</div></body></html>"
 f = codecs.open("reports/report.html", "w", "utf-8")
 f.write(report)
