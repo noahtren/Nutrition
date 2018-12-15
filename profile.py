@@ -11,7 +11,7 @@ age = profile_dict["age"]
 fat_percent = profile_dict["fat_percent"] * 0.01
 protein_percent = profile_dict["protein_percent"] * 0.01
 carb_percent = profile_dict["carb_percent"] * 0.01
-admittance_percent = 7 # how accurate do you want your rda values to be? Within +- this percent
+admittance_percent = profile_dict["leniency"] # how accurate do you want your rda values to be? Within +- this percent
 # Conversion and calculation of bmr and tdee (basal metabolic rate, total daily energy expenditure)
 weight_m = .4536 * weight_c
 height_m = 2.54 * height_c
@@ -23,40 +23,46 @@ tdee = bmr * (1 + hours_of_exercise * .55)
 top = tdee * (1 + admittance_percent * 0.01)
 bot = tdee * (1 - admittance_percent * 0.01)
 recommended_amounts = {
-    'Energy': (bot, top), #kcal
-    'Total lipid (fat)': ((bot/9)*fat_percent,(top/9)*fat_percent),#9 calories per g 55%
+    # PROXIMATES
+    'Calories': (bot, top), #kcal
+    'Fat': ((bot/9)*fat_percent,(top/9)*fat_percent),#9 calories per g 55%
     'Water': (2500, 3500), #g
     'Protein':((bot/4)*protein_percent,(top/4)*protein_percent), #4 calories per g 35%
-    'Carbohydrate, by difference':((bot/4)*carb_percent,(top/4)*carb_percent), #4 calories per g 10%
-    'Fiber, total dietary': (0.95*0.014*tdee,1.05*0.014*tdee),#g
-    'Sugars, total': ((bot/4)*0.05,(top/4)*0.1),#g
-    'Calcium, Ca':(1000,2500),
-    'Iron, Fe':(8,45),
-    'Potassium, K':(1400,6000),
-    'Sodium, Na':(1000,2300),
-    'Magnesium, Mg':(300,750),
-    'Phosphorus, P':(700,4000),
-    'Zinc, Zn':(12,100),
-    'Vitamin E (alpha-tocopherol)':(15,1000),
-    'Vitamin K (phylloquinone)':(120,"none"),
-    'Vitamin C, total ascorbic acid':(90,2000),
-    'Thiamin':(1.2,"none"),
-    'Riboflavin':(1.3,"none"),
-    'Niacin':(16,"none"), # make sure you can't have too much of this
-    'Vitamin B-6':(1.3,100),
-    'Folate, DFE':(400,1000),
-    'Vitamin A, RAE':(900,3000),
-    'Vitamin A, IU':(900,20000),
-    'Vitamin D (D2 + D3)':("none","none"),
-    'Vitamin D':(1000,8000),
-    'Vitamin B-12':(2.4,"none"),
-    # non-vetted values
+    'Carbs':((bot/4)*carb_percent,(top/4)*carb_percent), #4 calories per g 10%
+    'Fiber': (0.95*0.014*tdee,1.05*0.014*tdee),#g
+    'Sugar': ((bot/4)*0.05,(top/4)*0.1),#g - a bunch of monosaccharides
+    # MINERALS
+    'Calcium':(1000,2500), #mg
+    'Iron':(8,45), #mg
+    'Potassium':(1400,6000), #mg
+    'Sodium':(1000,2300), #mg
+    'Magnesium':(300,750), #mg
+    'Phosphorus':(700,4000), #mg
+    'Zinc':(12,100), #mg
     'Selenium':(70,400), #ug
     'Copper':(0.9,10), #mg
-    'Caffeine':(0, 400),
-    'Fatty acids, total saturated':(0, (tdee/9)*(fat_percent/0.3)*.1),
-    'Fatty acids, total monounsaturated':((tdee/9)*(fat_percent/0.3)*.15,(tdee/9)*(fat_percent/0.3)*.2),
-    'Fatty acids, total polyunsaturated':((tdee/9)*(fat_percent/0.3)*.05,(tdee/9)*(fat_percent/0.3)*.1),
-    'Fatty acids, total trans':(0,(tdee/9)*(fat_percent/0.3)*.01),
-    'Cholesterol':(0, 300)
+    'Manganese':("none", "none"), #mg
+    # VITAMINS
+    'Vitamin E':(15,1000), # mg - many kinds of tocopherols
+    'Vitamin K':(120,"none"), #ug
+    'Vitamin C':(90,2000), #mg
+    'Thiamin':(1.2,"none"), # mg
+    'Riboflavin':(1.3,"none"), #mg
+    'Niacin':(16,"none"), #mg
+    'Vitamin B-6':(1.3,100), #mg
+    'Folate':(400,1000), #ug
+    'Vitamin A, RAE':(900,3000), #ug
+    'Vitamin A, IU':(900,20000), # iu
+    'Vitamin D (D2 + D3)':("none","none"), # ug
+    'Vitamin D':(1000,8000), # iu
+    'Vitamin B-12':(2.4,"none"), # ug
+    # OTHER
+    'Caffeine':(0, 400), #mg
+    'Theobromine':("none", "none"), # mg
+    # FATS/LIPIDS
+    'Saturated':(0, (tdee/9)*(fat_percent/0.3)*.1), #g
+    'Monounsaturated':((tdee/9)*(fat_percent/0.3)*.15,(tdee/9)*(fat_percent/0.3)*.2), #g
+    'Polyunsaturated':((tdee/9)*(fat_percent/0.3)*.05,(tdee/9)*(fat_percent/0.3)*.1), #g
+    'Trans':(0,(tdee/9)*(fat_percent/0.3)*.01), #g
+    'Cholesterol':(0, 300) #mg
 }
