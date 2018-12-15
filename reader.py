@@ -14,8 +14,8 @@ def read_day():
                 food_objs.append(Food(access_database(food_dict["id"]), food_dict["grams"]))
             else:
                 nutrient_objs = []
-                for nutrient in day_dict[meal][food]["nutrients"]:
-                    nutrient_objs.append(Nutrient(nutrient["name"],nutrient["group"],nutrient["value"],nutrient["unit"]))
+                for nutrient in food_dict["nutrients"]:
+                    nutrient_objs.append(Nutrient(nutrient["name"],nutrient["group"],nutrient["value"],nutrient["unit"], None, food_dict["name"]))
                 food_objs.append(Food(food, nutrient_objs))
         if len(food_objs) > 0:
             meal_objs.append(Meal(food_objs))
