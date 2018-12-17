@@ -5,12 +5,16 @@ day:
       blueberry: { id: '09054', grams: 20 }
       oj: { id: '14064', grams: 100 }
       chia: { id: '12006', grams: 12 }
+      whey:
+        name: "Whey powder"
+        nutrients:
+          - { name: "Protein", group: "Proximates", value: 40, unit: "g"}
     Breakfast:
       egg: { id: '01132', grams: 60 }
       banana: { id: '09040', grams: 60 }
       yogurt: { id: '01284', grams: 100 }
     Lunch:
-      noodles: { id: '20110', grams: 200 }
+      noodles: { id: '20110', grams: 220 }
       red_pepper: { id: '11823', grams: 20 }
       onion: { id: '11282', grams: 10 }
       tofu: { id: '16162', grams: 30 }
@@ -46,7 +50,9 @@ day:
       fish_oil_supplement: 
         name: "Fish oil supplement"
         nutrients:
-          - { name: 'Polyunsaturated', group: 'Lipids', value: 2, unit: 'g'}
+          - { name: 'Polyunsaturated', group: 'Lipids', value: 1.5, unit: 'g'}
+          - { name: 'EPA', group: 'Lipids', value: 1, unit: 'g'}
+          - { name: 'DHA', group: 'Lipids', value: 0.5, unit: 'g'}
       garlic_supplement: { id: 11215, grams: 1 }
       calcium_supplement: 
         name: "Calcium supplement"
@@ -56,4 +62,4 @@ day:
       green_tea: { id: '14278', grams: 450}
       coffee: { id: '14180', grams: 450}
       creamer: { id: '16261', grams: 30}
-      water: { id: '14555', grams: 900}
+      water: { id: '14411', grams: 900}
