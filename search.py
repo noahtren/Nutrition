@@ -1,7 +1,7 @@
 from nutrition import *
 
 # Create a result object based on a text search
-chocolate = Results(search("chocolate"))
+chocolate = Results(search("water tap"))
 print(chocolate.Search_Info())
 # Get the food object representing the first result
 chocolate = Food(access_database("19081"),100)

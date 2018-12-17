@@ -27,11 +27,11 @@ start = time.clock()
 day_obj = reader.read_day()
 print("Time to build day object {}".format(str(time.clock() - start)))
 start = time.clock()
-
+'''
 my_gui = Nutrition_Gui(day_obj.meal)
 print("Time build GUI {}".format(str(time.clock() - start)))
 start = time.clock()
-
+'''
 day_obj.meal.Export("reports/ideal_day")
 print("Time to export {}".format(str(time.clock() - start)))
 start = time.clock()

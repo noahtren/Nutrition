@@ -43,7 +43,8 @@ recommended_amounts = {
     'Zinc':(12,100), #mg
     'Selenium':(70,400), #ug
     'Copper':(0.9,10), #mg
-    'Manganese':("none", "none"), #mg
+    'Manganese':(1.8, "none"), #mg
+    'Fluoride':(400,10000), #ug
     # VITAMINS
     'Vitamins':'Essential organic molecules',
     'Vitamin E':(15,1000), # mg - many kinds of tocopherols
@@ -52,7 +53,7 @@ recommended_amounts = {
     'Vitamin B-1 (Thiamine)':(1.2,"none"), # mg
     'Vitamin B-2 (Riboflavin)':(1.3,"none"), #mg
     'Vitamin B-3 (Niacin)':(16,"none"), #mg
-    'Vitamin B-5 (Pantothenic acid)':("none","none"), #mg
+    'Vitamin B-5 (Pantothenic acid)':(4,"none"), #mg
     'Vitamin B-6 (Pyridoxine)':(1.3,100), #mg
     'Vitamin B-9 (Folate)':(400,1000), #ug
     'Vitamin A, RAE':(900,3000), #ug
@@ -60,11 +61,11 @@ recommended_amounts = {
     'Vitamin D (D2 + D3)':("none","none"), # ug
     'Vitamin D':(1000,8000), # iu
     'Vitamin B-12 (Cobalamin)':(2.4,"none"), # ug
-    'Choline':("none","none"), # mg
+    'Choline':(550,3500), # mg
     # OTHER
     'Other':'Non-required nutrients, often stimulants',
-    'Caffeine':(0, 400), #mg
-    'Theobromine':("none", "none"), # mg
+    'Caffeine':("none", 400), #mg
+    'Theobromine':("none", 300), # mg
     # FATS/LIPIDS
     'Fats':'Key macronutrient that comes in various forms',
     'Saturated':(0, (tdee/9)*(fat_percent/0.3)*.1), #g
@@ -72,7 +73,7 @@ recommended_amounts = {
     'Polyunsaturated':((tdee/9)*(fat_percent/0.3)*.05,(tdee/9)*(fat_percent/0.3)*.1), #g
     'Trans':(0,(tdee/9)*(fat_percent/0.3)*.01), #g
     'Cholesterol':(0, 300), #mg
-    'Alpha-lipoic acid':("none","none"), #g
-    'EPA':("none","none"), #g
-    'DHA':("none","none")
+    'Alpha-lipoic acid':(0.6,"none"), #g
+    'EPA':(0.5,"none"), #g
+    'DHA':(0.5,"none")
 }

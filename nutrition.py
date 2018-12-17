@@ -130,7 +130,6 @@ class Food:
             # in this case, the tracked nutrients are from the recommended amount dict
             to_del = []
             for n in nutrient_json:
-                print(n["name"])
                 if n["name"] not in recommended_amounts.keys():
                     to_del.append(nutrient_json.index(n))
             # this algorithm will never take too much time because a list of nutrients
