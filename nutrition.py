@@ -3,12 +3,12 @@ import json
 import operator
 import os
 import settings
-from profile import recommended_amounts
+from profile import recommended_amounts, units, name_filter, name_replace
 
 local_usda_foods = []
 url = "https://api.nal.usda.gov/usda/ndb"
 try:
-    key = open("key.txt").read()
+    api_key = open("key.txt").read()
 except FileNotFoundError:
     print("key.txt not found in working directory! Please obtain a key from https://ndb.nal.usda.gov")
     exit()
@@ -32,49 +32,50 @@ class Day:
         return self.meal.Meal_Info(True)
 class Meal:
     def __init__(self, foods):
-        self.foods = foods
         # be able to return a list of grouped nutrients
         # a meal's nutrients are the sum of its food's nutrients
         groups = []
-        names = []
         grouped_names = []
-        units = []
-        tmp = False
-        for food in self.foods:
-            for group in food.groups:
-                if (group not in groups) and (group != None):
-                    groups.append(group)
-                    grouped_names.append([])
-            for nutrient_group in food.nutrients:
-                for nutrient in nutrient_group:
-                    if nutrient.name != None:
-                        if nutrient.name not in names:
-                            names.append(nutrient.name)
-                            units.append(nutrient.unit)
-                        if units[names.index(nutrient.name)] != nutrient.unit:
-                            print("Unexpected Error: the units of two entries for the same nutrient don't match!")
-                            exit()
-                for group in groups:
-                    for nutrient in nutrient_group:
-                        if nutrient.group == group:
-                            if nutrient.name not in grouped_names[groups.index(group)]:
-                                grouped_names[groups.index(group)].append(nutrient.name)
-        # we have a full list of all of the groups
-        # now get a full list of all the nutrient names
-        namevalues = [0] * len(names)
-        for name in names: # calories, calcium, potassium, etc.
-            for food in self.foods:
-                for nutrient_group in food.nutrients:
-                    for nutrient in nutrient_group:
-                        if (nutrient.name == name):
-                            namevalues[names.index(name)] += nutrient.value
+        grouped_values = []
+        i = -1
+        keys = recommended_amounts.keys()
+        for key in keys:
+            if type(recommended_amounts[key]) == str:
+                groups.append(key)
+                grouped_values.append([])
+                grouped_names.append([])
+                i += 1
+            else:
+                grouped_names[i].append(key)
+                grouped_values[i].append(0)
+        for f in foods:
+            g_num = 0
+            for g in f.nutrients:
+                while g[0].group != groups[g_num]:
+                    g_num += 1
+                n_num = 0
+                for n in g:
+                    found_one = True
+                    while n.name != grouped_names[g_num][n_num]:
+                        if n_num == len(grouped_names[g_num])-1:
+                            found_one = False
+                            break
+                        else:
+                            n_num += 1
+                    if found_one:
+                        grouped_values[g_num][n_num] += n.value
+                        n_num += 1
+                g_num += 1
         grouped_nutrients = []
-        for group in grouped_names:
+        for g_num in range(0, len(grouped_names)):
             grouped_nutrients.append([])
-            for name in group:
-                if (name != None):
-                    grouped_nutrients[grouped_names.index(group)].append(Nutrient(name, group, namevalues[names.index(name)], units[names.index(name)], 100, "MEAL"))
+            for n_num in range(0, len(grouped_names[g_num])):
+                grouped_nutrients[g_num].append(Nutrient(grouped_names[g_num][n_num],
+                                                    groups[g_num], round(grouped_values[g_num][n_num],3),
+                                                    units[g_num][n_num]))
+
         # all finished! The list of foods has been turned into a master list of each nutrient
+        self.foods = foods
         self.nutrients = grouped_nutrients
         self.groups = groups
     def Export(self, filepath):
@@ -147,9 +148,8 @@ class Food:
                     groups.append(nutrient["group"])
                     grouped_nutrients.append([])
                     count = 0
-                if (float(nutrient["value"]) != 0):
-                    grouped_nutrients[len(groups)-1].append(Nutrient(nutrient["name"], nutrient["group"], float(nutrient["value"]), nutrient["unit"], second, self.name))
-                    count += 1
+                grouped_nutrients[len(groups)-1].append(Nutrient(nutrient["name"], nutrient["group"], float(nutrient["value"]), nutrient["unit"], second, self.name))
+                count += 1
             self.nutrients = grouped_nutrients
             self.id = first["desc"]["ndbno"]
             self.grams = second
@@ -159,11 +159,13 @@ class Food:
             self.id = "User-assigned"
             groups = []
             self.nutrients = []
-            self.nutrients.append([])
             for nutrient in second:
-                groups.append(nutrient.group)
+                if nutrient.group not in groups:
+                    groups.append(nutrient.group)
+                    self.nutrients.append([])
                 nutrient.food = self.name
-                self.nutrients[0].append(nutrient)
+                self.nutrients[groups.index(nutrient.group)].append(nutrient)
+            # these may need to be sorted here, or sorted when procedurally generated in the ideal day json file
             self.groups = groups
             self.grams = "N/A"
     def Food_Info(self, rda=False):
@@ -174,7 +176,7 @@ class Food:
         for group_num in range(0, len(self.nutrients)):
             return_string = return_string + "\n\n" + self.groups[group_num]
             for nutrient in self.nutrients[group_num]:
-                return_string = return_string + "\n" + nutrient.Info(False)
+                return_string = return_string + "\n" + nutrient.Info(rda)
         return return_string
     def Dict(self):
         n = []
@@ -268,60 +270,35 @@ class Results:
         else:
             return "No results"
 
-# if you change this, remember that it doesn't fix local data
-name_filter = ["Energy", "Total lipid (fat)", "Carbohydrate, by difference",
-               "Fiber, total dietary", "Sugars, total", "Calcium, Ca", "Iron, Fe",
-               "Potassium, K", "Sodium, Na", "Magnesium, Mg", "Phosphorus, P",
-               "Zinc, Zn", "Copper, Cu", "Manganese, Mn",
-               "Selenium, Se", "Fluoride, F", "Thiamin", "Riboflavin",
-               "Niacin", "Vitamin B-6", "Pantothenic acid",
-               "Vitamin E (alpha-tocopherol)", "Vitamin K (phylloquinone)",
-               "Vitamin C, total ascorbic acid", "Folate, total", 
-               "Choline, total", "Vitamin B-12",
-               "Fatty acids, total saturated",
-               "Fatty acids, total monounsaturated", "Fatty acids, total polyunsaturated",
-               "Fatty acids, total trans",
-               "18:3 n-3 c,c,c (ALA)", "20:5 n-3 (EPA)", "22:6 n-3 (DHA)"]
-name_replace = ["Calories", "Fat", "Carbs", 
-                "Fiber", "Sugar", "Calcium", "Iron",
-                "Potassium", "Sodium", "Magnesium", "Phosphorus",
-                "Zinc", "Copper", "Manganese",
-                "Selenium", "Fluoride", "Vitamin B-1 (Thiamine)", "Vitamin B-2 (Riboflavin)",
-                "Vitamin B-3 (Niacin)", "Vitamin B-6 (Pyridoxine)", "Vitamin B-5 (Pantothenic acid)",
-                "Vitamin E", "Vitamin K",
-                "Vitamin C", "Vitamin B-9 (Folate)", 
-                "Choline", "Vitamin B-12 (Cobalamin)",
-                "Saturated",
-                "Monounsaturated", "Polyunsaturated",
-                "Trans",
-                "Alpha-lipoic acid", "EPA", "DHA"]
-
 def access_database(food_id):
+    # check local storage
     if len(local_usda_foods) == 0:
         scan_files()
     if food_id in local_usda_foods:
+        # file stored locally, get it quickly
         response = open("usda_foods/{}.json".format(food_id), "r").read()
         food_json = json.loads(response)
     else:
+        # file not stored locally, get it from API and clean it up
         params = dict(
             ndbno=str(food_id),
             type='f', 
             format='json', 
-            api_key=key
+            api_key=api_key
         )
         response = requests.get(url=url + "/V2/reports", params=params).text
-        food_json = json.loads(response)
-        food_json = food_json["foods"][0]["food"]
-        del food_json["sr"]; del food_json["type"]; del food_json["footnotes"]
-        del food_json["sources"]; del food_json["langual"]
-        desc = food_json["desc"]
+        data_json = json.loads(response)
+        data_json = data_json["foods"][0]["food"]
+        del data_json["sr"]; del data_json["type"]; del data_json["footnotes"]
+        del data_json["sources"]; del data_json["langual"]
+        desc = data_json["desc"]
         extraneous_describers = ["sd", "sn", "cn", "manu", "nf", "cf", "ff", "pf", "r", "rd", "ds",
                                  "ru"]
         for describer in extraneous_describers:
             if describer in desc:
                 del desc[describer]
         to_del = []
-        for n in food_json["nutrients"]:
+        for n in data_json["nutrients"]:
             if n["name"] in name_filter:
                 try:
                     n["name"] = name_replace[name_filter.index(n["name"])]
@@ -329,14 +306,33 @@ def access_database(food_id):
                     print("There was an error filtering {}".format(n["name"]))
                     exit()
             if n["name"] == "Calories" and n["unit"] == "kJ":
-                to_del.append(food_json["nutrients"].index(n))
+                to_del.append(data_json["nutrients"].index(n))
+            if n["group"] == "Lipids":
+                n["group"] = "Fats"
             del n["measures"]; del n["derivation"]; del n["nutrient_id"]
             del n["sourcecode"]; del n["dp"]; del n["se"]
         for i in to_del:
-            del food_json["nutrients"][i]
+            del data_json["nutrients"][i]
             for j in to_del:
                 if i < j:
                     to_del[to_del.index(j)] -= 1
+        # now, sort the nutrients according to how they should appear in a standard food
+        ordered_names = []
+        keys = recommended_amounts.keys()
+        for key in keys:
+            if type(recommended_amounts[key]) != str:
+                ordered_names.append(key)
+        nutrients = []
+        for i in range(0, len(ordered_names)):
+            contains = False
+            for n in data_json["nutrients"]:
+                if n["name"] == ordered_names[i]:
+                    nutrients.append(n)
+                    contains = True
+        food_json = dict(
+                         desc=desc,
+                         nutrients=nutrients
+        )
         open("usda_foods/{}.json".format(food_id), "w").write(json.dumps(food_json))
     return food_json
 
@@ -347,7 +343,7 @@ def search(name):
         sort='r',
         max=20,
         format='json',
-        api_key=key
+        api_key=api_key
     )
     response = requests.get(url=url + "/search", params=params).text
     usda_data = json.loads(response)
