@@ -68,7 +68,8 @@ recommended_amounts = {
     'Saturated':(0, (tdee/9)*(fat_percent/0.3)*.1), #g
     'Monounsaturated':((tdee/9)*(fat_percent/0.3)*.15,(tdee/9)*(fat_percent/0.3)*.2), #g
     'Polyunsaturated':((tdee/9)*(fat_percent/0.3)*.05,(tdee/9)*(fat_percent/0.3)*.1), #g
-    'Alpha-lipoic acid':(0.6,"none"), #g
+    'Omega-3':("none","none"), #g
+    'ALA':(0.6,"none"), #g
     'EPA':(0.5,"none"), #g
     'DHA':(0.5,"none"),
     'Trans':(0,(tdee/9)*(fat_percent/0.3)*.01), #g
@@ -82,7 +83,7 @@ recommended_amounts = {
 units = [["g", "kcal", "g", "g", "g", "g", "g"],
          ["mg", "mg", "mg", "mg", "mg", "mg", "mg", "mg", "mg", "µg", "µg"],
          ["mg", "mg", "mg", "mg", "mg", "mg", "µg", "µg", "µg", "IU", "mg", "µg", "IU", "mg", "µg"],
-         ["g", "g", "g", "g", "g", "g", "g", "mg"],
+         ["g", "g", "g", "g", "g", "g", "g", "g", "mg"],
          ["mg", "mg"]]
 
 # if you change this, remember that it doesn't fix local data
@@ -111,4 +112,12 @@ name_replace = ["Calories", "Fat", "Carbs",
                 "Saturated",
                 "Monounsaturated", "Polyunsaturated",
                 "Trans",
-                "Alpha-lipoic acid", "EPA", "DHA"]
+                "ALA", "EPA", "DHA"]
+
+encapsulators = {
+    "Omega-3": {
+        "includes":["ALA", "EPA", "DHA"],
+        "group":"Fats",
+        "unit":"g"
+    }
+}

@@ -3,7 +3,7 @@ import json
 import operator
 import os
 import settings
-from profile import recommended_amounts, units, name_filter, name_replace
+from profile import recommended_amounts, units, name_filter, name_replace, encapsulators
 
 local_usda_foods = []
 url = "https://api.nal.usda.gov/usda/ndb"
@@ -132,6 +132,7 @@ class Food:
             to_del = []
             for n in nutrient_json:
                 if n["name"] not in recommended_amounts.keys():
+                    print("I actually did sometihng")
                     to_del.append(nutrient_json.index(n))
             # this algorithm will never take too much time because a list of nutrients
             # will never be greater than ~150
@@ -289,6 +290,7 @@ def access_database(food_id):
         response = requests.get(url=url + "/V2/reports", params=params).text
         data_json = json.loads(response)
         data_json = data_json["foods"][0]["food"]
+        # remove extra information that isn't needed
         del data_json["sr"]; del data_json["type"]; del data_json["footnotes"]
         del data_json["sources"]; del data_json["langual"]
         desc = data_json["desc"]
@@ -298,6 +300,13 @@ def access_database(food_id):
             if describer in desc:
                 del desc[describer]
         to_del = []
+        encap_names = []; encap_targets = []; encap_values = []
+        for encap in encapsulators.keys():
+            encap_targets.append(encap)
+            encap_values.append(0)
+            for name in encapsulators[encap]["includes"]:
+                encap_names.append(name)
+        # continue making changes to the data to fit with the system
         for n in data_json["nutrients"]:
             if n["name"] in name_filter:
                 try:
@@ -311,6 +320,20 @@ def access_database(food_id):
                 n["group"] = "Fats"
             del n["measures"]; del n["derivation"]; del n["nutrient_id"]
             del n["sourcecode"]; del n["dp"]; del n["se"]
+            if n["name"] in encap_names:
+                for target in encap_targets:
+                    if n["name"] in encapsulators[target]["includes"]:
+                        encap_values[encap_targets.index(target)] += n["value"]
+                        print("Added {} to {} for a total of {}".format(n["value"], target, encap_values[encap_targets.index(target)]))
+                        # we found the target of this nutrient, so add it
+        for encap_idx in range(0, len(encap_targets)):
+            name = encap_targets[encap_idx]
+            data_json["nutrients"].append(dict(
+                name=name,
+                group=encapsulators[name]["group"],
+                unit=encapsulators[name]["unit"],
+                value=encap_values[encap_idx]
+            ))
         for i in to_del:
             del data_json["nutrients"][i]
             for j in to_del:
