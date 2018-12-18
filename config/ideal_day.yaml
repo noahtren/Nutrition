@@ -50,9 +50,10 @@ day:
       fish_oil_supplement: 
         name: "Fish oil supplement"
         nutrients:
-          - { name: 'Polyunsaturated', group: 'Lipids', value: 1.5, unit: 'g'}
-          - { name: 'EPA', group: 'Lipids', value: 1, unit: 'g'}
-          - { name: 'DHA', group: 'Lipids', value: 0.5, unit: 'g'}
+          - { name: 'Polyunsaturated', group: 'Fats', value: 1.5, unit: 'g'}
+          - { name: 'Omega-3', group: 'Fats', value: 1.5, unit: 'g'}
+          - { name: 'EPA', group: 'Fats', value: 1, unit: 'g'}
+          - { name: 'DHA', group: 'Fats', value: 0.5, unit: 'g'}
       garlic_supplement: { id: 11215, grams: 1 }
       calcium_supplement: 
         name: "Calcium supplement"
