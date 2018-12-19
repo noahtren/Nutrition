@@ -16,7 +16,7 @@ def read_day():
                 nutrient_objs = []
                 for nutrient in food_dict["nutrients"]:
                     nutrient_objs.append(Nutrient(nutrient["name"],nutrient["group"],nutrient["value"],nutrient["unit"], None, food_dict["name"]))
-                food_objs.append(Food(food, nutrient_objs))
+                food_objs.append(Food(food_dict["name"], nutrient_objs))
         if len(food_objs) > 0:
             meal_objs.append(Meal(food_objs))
     day_obj = Day(meal_objs)
