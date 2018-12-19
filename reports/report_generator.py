@@ -14,7 +14,6 @@ def Gen_Report():
 
     <head>
     <title>Nutrition Report</title>
-    <script src="code.js"></script>
     <link rel="stylesheet" href="styles.css" type="text/css">
     </head>
 
@@ -41,14 +40,16 @@ def Gen_Report():
             elif "deficient" in nutrient["message"].lower():
                 status = "yellow"
             else:
-                status = "red"
-            report = report + '''\n       <div class=\"nutrient_{}\" id="parent"><b>{}</b><br />{} {}<br />{}</div>'''.format(status, 
+                status = "red" 
+            report = report + '''\n       <div class=\"nutrient_{}\" onclick=\"display_detail(this)\"><b>{}</b><br />{} {}<br />{}</div>'''.format(status, 
             nutrient["name"], nutrient["value"], 
             nutrient["unit"], nutrient["message"].replace("\n", "<br />"))
             k = k + 1 
         report = report + "</div></div>"
         i = i + 1
 
-    report = report + "\n</div></body></html>"
+    report = report + "\n</div>"
+    report = report + "<div class=\"json\" id=\"json\">{}</div>".format(json.dumps(data))
+    report = report + "</body>    <script src=\"code.js\"></script></html>"
     f = codecs.open("{}/report.html".format(d), "w", "utf-8")
     f.write(report)
