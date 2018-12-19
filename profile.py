@@ -81,8 +81,8 @@ recommended_amounts = {
 
 }
 units = [["g", "kcal", "g", "g", "g", "g", "g"],
-         ["mg", "mg", "mg", "mg", "mg", "mg", "mg", "mg", "mg", "µg", "µg"],
-         ["mg", "mg", "mg", "mg", "mg", "mg", "µg", "µg", "µg", "IU", "mg", "µg", "IU", "mg", "µg"],
+         ["mg", "mg", "mg", "mg", "mg", "mg", "mg", "mg", "mg", "ug", "ug"],
+         ["mg", "mg", "mg", "mg", "mg", "mg", "ug", "ug", "ug", "IU", "mg", "ug", "IU", "mg", "ug"],
          ["g", "g", "g", "g", "g", "g", "g", "g", "mg"],
          ["mg", "mg"]]
 
