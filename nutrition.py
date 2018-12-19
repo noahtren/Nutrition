@@ -294,6 +294,9 @@ def access_database(food_id):
         del data_json["sr"]; del data_json["type"]; del data_json["footnotes"]
         del data_json["sources"]; del data_json["langual"]
         desc = data_json["desc"]
+        # remove lengthy parentheses around food names
+        if "(" in desc["name"]:
+            desc["name"] = desc["name"][:desc["name"].find("(")-1]
         extraneous_describers = ["sd", "sn", "cn", "manu", "nf", "cf", "ff", "pf", "r", "rd", "ds",
                                  "ru"]
         for describer in extraneous_describers:
@@ -308,6 +311,8 @@ def access_database(food_id):
                 encap_names.append(name)
         # continue making changes to the data to fit with the system
         for n in data_json["nutrients"]:
+            if n["unit"] == "µg":
+                n["unit"] = "ug"
             if n["name"] in name_filter:
                 try:
                     n["name"] = name_replace[name_filter.index(n["name"])]
