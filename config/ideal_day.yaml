@@ -18,7 +18,7 @@ day:
       red_pepper: { id: '11823', grams: 20 }
       onion: { id: '11282', grams: 10 }
       tofu: { id: '16162', grams: 30 }
-      chicken2: { id: '05136', grams: 60 }
+      chicken: { id: '05136', grams: 60 }
       sauce: { id: '27050', grams: 20 }
     Snacks:
       peanut_butter: { id: '16098', grams: 40 }
